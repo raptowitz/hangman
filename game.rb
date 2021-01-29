@@ -11,7 +11,7 @@ class Game
   def play_game
     create_secret_word
     @board.display(@secret_word)
-    check_word(@player.guess)
+    find_index if check_word(@player.guess)
   end
 
   def create_secret_word
@@ -22,9 +22,15 @@ class Game
   end
 
   def check_word(guess)
-    @secret_word.include?(guess)
+    @guess = guess
+    @secret_word.include?(@guess)
   end
 
+  def find_index
+    @secret_word.split(//).each_with_index do |letter, index|
+      @board.place_guess(letter, index) if letter == @guess
+    end
+  end
 end
 
 # human player
@@ -38,8 +44,15 @@ end
 class Board
   def display(secret_word)
     @secret_word = secret_word
-    p Array.new(secret_word.length, '?')
+    p @display = Array.new(secret_word.length, '?')
   end
+
+  def place_guess(letter, index)
+    @letter = letter
+    @index = index
+    @display[@index] = @letter
+  end
+
 end
 
 new_game = Game.new(Player.new, Board.new)
