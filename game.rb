@@ -55,6 +55,18 @@ class Game
     else
       puts "\nTry again! \nThe secret word was #{@secret_word}"
     end
+    play_again
+  end
+
+  def play_again
+    puts 'Play again? (y/n)'
+    if gets.chomp == 'y'
+      puts "\e[H\e[2J"
+      new_game = Game.new(Board.new, Player.new)
+      new_game.start_game
+    else
+      puts 'Thanks for playing friend!'
+    end
   end
 end
 
