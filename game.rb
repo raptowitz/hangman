@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "yaml"
+
 # dictionary
 module Dictionary
   def secret_word
@@ -19,6 +21,18 @@ class Game
     @board = board
   end
 
+  def serialize
+    saved_game = YAML.dump(self)
+    filename = 'saved_games/saved_game.yaml'
+    File.open(filename, 'w') do |file|
+      file.puts saved_game
+    end
+  end
+
+  def self.deserialize(yaml_string)
+    YAML.safe_load(yaml_string)
+  end
+
   def start_game
     @board.blank_board(secret_word)
     until @board.lives.zero?
@@ -29,16 +43,19 @@ class Game
   end
 
   def play_game
-    if word_contains(@player.guess)
+    p @guess = @player.guess
+    if @guess == 'save'
+      serialize
+    elsif word_contains?(@guess)
       find_letter
     else
       @board.wrong_letter(@guess)
     end
-    puts "\e[H\e[2J"
+    # puts "\e[H\e[2J"
     @board.display
   end
 
-  def word_contains(guess)
+  def word_contains?(guess)
     @guess = guess
     @secret_word.include?(@guess)
   end
@@ -77,9 +94,10 @@ class Player
   end
 
   def guess
-    puts 'Guess a letter of the secret word!'
+    puts "Guess a letter of the secret word or enter 'save' to store your game!"
     @guess = gets.chomp.downcase
-    validate
+    validate unless @guess == 'save'
+    @guess
   end
 
   def validate
@@ -132,4 +150,7 @@ class Board
 end
 
 new_game = Game.new(Board.new, Player.new)
+#yaml = new_game.serialize
+#p yaml
+#puts YAML.load(yaml)
 new_game.start_game

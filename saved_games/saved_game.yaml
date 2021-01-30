@@ -1,0 +1,24 @@
+--- !ruby/object:Game
+player: !ruby/object:Player
+  guessed_letters:
+  - r
+  - e
+  - i
+  guess: save
+board: !ruby/object:Board
+  wrong_letters:
+  - r
+  lives: 7
+  secret_word: sinewy
+  display:
+  - _
+  - i
+  - _
+  - e
+  - _
+  - _
+  guess: r
+  letter: i
+  index: 1
+secret_word: sinewy
+guess: save
