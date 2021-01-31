@@ -1,0 +1,27 @@
+--- !ruby/object:Game
+player: !ruby/object:Player
+  guessed_letters:
+  - e
+  - a
+  - l
+  - s
+  guess: save
+board: !ruby/object:Board
+  wrong_letters:
+  - a
+  - l
+  lives: 6
+  secret_word: onshore
+  display:
+  - _
+  - _
+  - s
+  - _
+  - _
+  - _
+  - e
+  letter: s
+  index: 2
+  guess: l
+secret_word: onshore
+guess: save

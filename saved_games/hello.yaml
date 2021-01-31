@@ -1,0 +1,30 @@
+--- !ruby/object:Game
+player: !ruby/object:Player
+  guessed_letters:
+  - f
+  - l
+  - m
+  - n
+  guess: save
+board: !ruby/object:Board
+  wrong_letters:
+  - f
+  - m
+  - n
+  lives: 5
+  secret_word: excusable
+  display:
+  - _
+  - _
+  - _
+  - _
+  - _
+  - _
+  - _
+  - l
+  - _
+  guess: n
+  letter: l
+  index: 7
+secret_word: excusable
+guess: save

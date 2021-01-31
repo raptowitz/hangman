@@ -29,21 +29,46 @@ class Game
     end
   end
 
-  def self.deserialize(yaml_string)
-    YAML.safe_load(yaml_string)
+  def choose_game
+    puts 'Would you like to start a (1) new game (2) load saved game'
+    if gets.chomp == '1'
+      puts "\e[H\e[2J"
+      new_game = Game.new(Board.new, Player.new)
+      new_game.start_game
+    else
+      load_saved_game
+    end
+  end
+
+  def load_saved_game
+    puts 'Which game would you like to load?'
+    Dir.new('saved_games').each do |file|
+      puts file unless file.start_with?('.')
+    end
+    @filename = "saved_games/#{gets.chomp}"
+    File.open(@filename, 'r') do |file|
+      new_game = YAML.load(file)
+      new_game.play_game
+    end
   end
 
   def start_game
     @board.blank_board(secret_word)
+    play_game
+  end
+
+  def play_game
+    puts "\e[H\e[2J"
+    @board.display
     until @board.lives.zero?
-      play_game
-      break if @board.game_over?
+      guess_letters
       break if @guess == 'save'
+      break if @board.game_over?
     end
     display_results
   end
 
-  def play_game
+  def guess_letters
     @guess = @player.guess
     if @guess == 'save'
       serialize
@@ -87,9 +112,7 @@ class Game
   def play_again
     puts 'Play again? (y/n)'
     if gets.chomp == 'y'
-      puts "\e[H\e[2J"
-      new_game = Game.new(Board.new, Player.new)
-      new_game.start_game
+      choose_game
     else
       puts 'Thanks for playing friend!'
     end
@@ -159,4 +182,4 @@ class Board
 end
 
 new_game = Game.new(Board.new, Player.new)
-new_game.start_game
+new_game.choose_game
