@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "yaml"
+require 'yaml'
 
 # dictionary
 module Dictionary
@@ -23,8 +23,8 @@ class Game
 
   def serialize
     saved_game = YAML.dump(self)
-    filename = 'saved_games/saved_game.yaml'
-    File.open(filename, 'w') do |file|
+    puts 'Enter a name for your saved game'
+    File.open("saved_games/#{gets.chomp}.yaml", 'w') do |file|
       file.puts saved_game
     end
   end
@@ -38,20 +38,27 @@ class Game
     until @board.lives.zero?
       play_game
       break if @board.game_over?
+      break if @guess == 'save'
     end
     display_results
   end
 
   def play_game
-    p @guess = @player.guess
+    @guess = @player.guess
     if @guess == 'save'
       serialize
-    elsif word_contains?(@guess)
+    else
+      check_guess
+    end
+  end
+
+  def check_guess
+    if word_contains?(@guess)
       find_letter
     else
       @board.wrong_letter(@guess)
     end
-    # puts "\e[H\e[2J"
+    puts "\e[H\e[2J"
     @board.display
   end
 
@@ -67,7 +74,9 @@ class Game
   end
 
   def display_results
-    if @board.game_over?
+    if @guess == 'save'
+      puts 'Game saved.'
+    elsif @board.game_over?
       puts "\nYou win! \nThe secret word was #{@secret_word}"
     else
       puts "\nTry again! \nThe secret word was #{@secret_word}"
@@ -150,7 +159,4 @@ class Board
 end
 
 new_game = Game.new(Board.new, Player.new)
-#yaml = new_game.serialize
-#p yaml
-#puts YAML.load(yaml)
 new_game.start_game
