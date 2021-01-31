@@ -1,17 +1,5 @@
 # frozen_string_literal: true
 
-require 'yaml'
-
-# dictionary
-module Dictionary
-  def secret_word
-    words = File.readlines('5desk.txt')
-    words.keep_if { |word| word.chomp.length > 5 && word.chomp.length < 12 }
-    @secret_word = words.sample.chomp.downcase
-    # p @secret_word
-  end
-end
-
 # game logic
 class Game
   include Dictionary
@@ -36,16 +24,20 @@ class Game
       new_game = Game.new(Board.new, Player.new)
       new_game.start_game
     else
-      load_saved_game
+      load_saved_games
     end
   end
 
-  def load_saved_game
+  def load_saved_games
     puts 'Which game would you like to load?'
     Dir.new('saved_games').each do |file|
       puts file unless file.start_with?('.')
     end
-    @filename = "saved_games/#{gets.chomp}"
+    open_saved_game
+  end
+
+  def open_saved_game
+    @filename = "saved_games/#{gets.chomp}.yaml"
     File.open(@filename, 'r') do |file|
       new_game = YAML.load(file)
       new_game.play_game
@@ -118,68 +110,3 @@ class Game
     end
   end
 end
-
-# human player
-class Player
-  def initialize
-    @guessed_letters = []
-  end
-
-  def guess
-    puts "Guess a letter of the secret word or enter 'save' to store your game!"
-    @guess = gets.chomp.downcase
-    validate unless @guess == 'save'
-    @guess
-  end
-
-  def validate
-    until @guess.length == 1 && @guess.match?(/[[:alpha:]]/) &&
-          @guessed_letters.none?(@guess)
-      puts 'Guess one letter'
-      @guess = gets.chomp.downcase
-    end
-    @guessed_letters.push(@guess)
-    @guess
-  end
-end
-
-# display
-class Board
-  attr_reader :lives, :wrong_letters
-
-  def initialize
-    @wrong_letters = []
-    @lives = 8
-  end
-
-  def blank_board(secret_word)
-    @secret_word = secret_word
-    @display = Array.new(secret_word.length, '_')
-    display
-  end
-
-  def display
-    puts "Used Letters: #{@wrong_letters.join(' ')}"
-    puts "#{@lives} guesses left"
-    puts "\n #{@display.join(' ')}"
-  end
-
-  def place_guess(letter, index)
-    @letter = letter
-    @index = index
-    @display[@index] = @letter
-  end
-
-  def wrong_letter(guess)
-    @guess = guess
-    @wrong_letters.push(@guess)
-    @lives -= 1
-  end
-
-  def game_over?
-    @display.none? { |space| space == '_' }
-  end
-end
-
-new_game = Game.new(Board.new, Player.new)
-new_game.choose_game
